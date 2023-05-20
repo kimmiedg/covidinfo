@@ -1,12 +1,11 @@
 class Top::CovidObservationsController < ApplicationController
 
   def confirmed
-    if params[:observation_date].present? && is_valid_date_format(params[:observation_date])
-      @covid_observations = CovidObservation.get_covid_cases(observation_date: params[:observation_date], cases_count: 2)
-      c = {observation_date: params[:observation_date], countries: @covid_observations.map{|c| {country: c.country, confirmed: c.confirmed, deaths: c.deaths, recovered: c.recovered}}}
-      render json: JSON.neat_generate(c, wrap: 40)
+    if is_valid_date_format(params[:observation_date]) && params[:max_results].present?
+      @covid_observations = CovidObservation.get_covid_cases(observation_date: params[:observation_date], cases_count: params[:max_results])
+      render json: JSON.neat_generate({observation_date: params[:observation_date], countries: @covid_observations}, wrap: 40)
     else
-      render json: "Invalid Date Parameters"
+      render json: "Invalid Paramaters."
     end
   end
 
